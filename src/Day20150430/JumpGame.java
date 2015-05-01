@@ -15,14 +15,15 @@ public class JumpGame {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int[] a = {3,2,1,0,4};
-		System.out.println(canJump(a));
+		int[] a = {2,3,1,1,4};
+		System.out.println(canJumpSolution2(a));
 	}
 
 	/*
 	 * 1.可以向两个方向跳么？
 	 * 2.maximum jump length
 	 * 
+	 * 超时
 	 */
 	public static boolean canJump(int[] nums) {
 		int N = nums.length;
@@ -71,5 +72,46 @@ public class JumpGame {
 		}
 		
 		return false;
+	}
+	
+	
+	/*
+	 * DFS 还是超时，看来有巧妙的解法
+	 * 
+	 */
+	public static boolean canJumpSolution2(int[] nums) {
+		return solve(0, nums);		
+	}
+	
+	public static boolean solve(int start,int[] nums){
+		if((start + nums[start]) >= nums.length -1){
+			return true;
+		}
+		
+		for(int i = 1; i <= nums[start]; i ++){
+			if(solve(start + i, nums)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/*
+	 * DP
+	 * 
+	 */
+	public static boolean canJumpSolution3(int[] nums) {
+		if(nums.length == 1)
+	        return true;
+		
+		int global = 0;
+		for(int i = 0; i < nums.length -1 && i <= global; i ++){
+			global = Math.max(global, i + nums[i]);
+			if(global >= nums.length - 1)
+				return true;
+		}
+		
+		return false;
+		
 	}
 }

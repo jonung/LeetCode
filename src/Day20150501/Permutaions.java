@@ -8,8 +8,8 @@ import java.util.List;
 public class Permutaions {
 
 	public static void main(String[] args){
-		int[] a = {1,2,1};
-		List<ArrayList<Integer>> res = permute(a);
+		int[] a = {1};
+		List<List<Integer>> res = PermutationsII.permuteUnique(null);
 		
 		for(int i = 0; i < res.size(); i ++){
 			List<Integer> l = res.get(i);

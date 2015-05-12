@@ -19,7 +19,7 @@ public class AddBinary {
 
 	/*
 	 * 从后向前面迭代，迭代max(a.length,b.length)次，在第i次迭代中，a中的字符为
-	 * a[a.length - i - i],b中的字符为b[b.length - 1- i]ß
+	 * a[a.length - i - i],b中的字符为b[b.length - 1- i]
 	 * 
 	 */
 	public String addBinary(String a, String b) {

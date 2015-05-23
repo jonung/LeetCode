@@ -1,5 +1,6 @@
 #include<cstdio>
 #include<vector>
+#include<iostream>
 
 
 using namespace std;
@@ -7,6 +8,7 @@ using namespace std;
 vector<vector<int> > data;
 vector<vector<int> > aux;
 
+vector<vector<int> > reverseData;
 
 int maxScore(vector<vector<int> >& data, vector<vector<int> >& aux){
 	int r = aux.size();
@@ -115,6 +117,15 @@ int maxScoreImproved(vector<vector<int> >& data, vector<vector<int> >& aux){
 		vector<int> up;
 		vector<int> down;
 
+		printf("current aux\n" );
+		for(int xx = 0; xx < aux.size(); xx ++){
+
+			for(int yy = 0; yy < aux[0].size(); yy ++){
+				printf("%d ", aux[xx][yy]);
+			}
+			printf("\n");
+		}
+
 		for(int i = 0; i < r; i ++){
 
 			if(i == 0){
@@ -161,6 +172,99 @@ int maxScoreImproved(vector<vector<int> >& data, vector<vector<int> >& aux){
 			aux[i][j] = maxAmongThree(directRight,up[i],down[r-i-1]);
 		}
 
+
+	}
+
+	//teleport
+	vector<vector<bool> > flag;
+	for(int i = 0; i < data.size(); i ++){
+		vector<bool> ele;
+		for(int j = 0; j < data[0].size(); j ++){
+			ele.push_back(false);
+		}
+		flag.push_back(ele);
+	}
+
+	for(int j = 0; j < data[0].size(); j ++){
+		for(int i = 0; i < data.size(); i ++){
+			if(j == 0){
+				if(data[i][j] != -1){
+					flag[i][j] = true;
+					if(data[i][j+1] != -1)
+						flag[i][j+1] = true;
+				}
+			}
+			else{
+				if(flag[i][j]){
+
+					int m;
+					for(m = i-1; m >= 0; m --){
+						if(flag[m][j])
+							break;
+						else{
+							if(data[m][j] != -1)
+								flag[m][j] = true;
+							else{
+								break;
+							}
+						}
+					}
+
+					if(flag[0][j] && data[data.size() -1][j] != -1){
+						
+						for(m = data.size() -1; m >=0; m --){
+							if(flag[m][j])
+								break;
+							else{
+								if(data[m][j] != -1)
+									flag[m][j] = true;
+								else
+									break;
+							}
+						}
+					}
+
+					for(m = i +1; m < data.size(); m ++){
+						if(flag[m][j]){
+							break;
+						}
+						else{
+							if(data[m][j] != -1)
+								flag[m][j] = true;
+							else
+								break;
+						}
+					}
+
+					if(flag[data.size() -1][j] && data[0][j] != -1){
+						for(m = 0; m < data.size(); m ++){
+							if(flag[m][j]){
+								break;
+							}
+							else{
+								if(data[m][j] != -1)
+									flag[m][j] = true;
+								else
+									break;
+							}
+						}
+					}
+
+				}
+			}
+		}
+
+		for(int i = 0; i < data.size(); i ++){
+			if(flag[i][j] && j + 1 < data[0].size() && data[i][j+1] != -1)
+				flag[i][j+1] = true;
+		}
+
+		printf("current flag\n");
+		for(int xx = 0; xx < data.size(); xx ++){
+			for(int yy = 0; yy< data[0].size(); yy ++)
+				cout<<flag[xx][yy]<<" ";
+			printf("\n");
+		}
 	}
 
 	int res = -1;
@@ -168,12 +272,152 @@ int maxScoreImproved(vector<vector<int> >& data, vector<vector<int> >& aux){
 		if(aux[i][0] > res)
 			res = aux[i][0];
 
+	for(int j = 0; j < data[0].size(); j ++){
+		if(aux[0][j] > res && flag[0][j])
+			res = aux[0][j];
+
+		if(aux[r-1][j] > res && flag[r-1][j])
+			res = aux[r-1][j];
+	}
 
 	return res;
 
 }
 
+void solve(vector<vector<int> >& data, vector<vector<int> >& aux, int endColumn){
+	aux.clear();
+	int r = data.size();
+	int c = data[0].size() + 1;
 
+	//init aux
+	for(int i = 0; i < r; i ++){
+		vector<int> ele;
+		for(int j = 0; j < c; j ++){
+			ele.push_back(0);
+		}
+		aux.push_back(ele);
+	}
+
+	for(int j = c - 2; j >= endColumn; j --){
+		vector<int> up;
+		vector<int> down;
+
+		printf("current aux\n" );
+		for(int xx = 0; xx < aux.size(); xx ++){
+
+			for(int yy = 0; yy < aux[0].size(); yy ++){
+				printf("%d ", aux[xx][yy]);
+			}
+			printf("\n");
+		}
+
+		for(int i = 0; i < r; i ++){
+
+			if(i == 0){
+				up.push_back(-1);
+			}
+			else{
+				if(data[i][j] != -1 ){
+					if(data[i - 1][j] != -1 && aux[i-1][j+1] != -1 && aux[i-1][j+1] + data[i-1][j] > up[i-1])
+						up.push_back(data[i][j] + data[i-1][j] + aux[i-1][j+1]);
+					else if(up[i-1] != -1)
+						up.push_back(data[i][j] + up[i-1]);
+					else
+						up.push_back(-1);
+				}
+				else
+					up.push_back(-1);
+			}
+
+		}
+
+		for(int i = r - 1; i >= 0; i --){
+			if(i == r-1){
+				down.push_back(-1);
+			}
+			else{
+				if(data[i][j] != -1){
+					
+					if(data[i+1][j] != -1 && aux[i+1][j+1] != -1 && aux[i+1][j+1] + data[i+1][j] > down[r-i-2]){
+						down.push_back(data[i][j] + data[i+1][j] + aux[i+1][j+1]);
+					}
+					else if(down[r-i-2] != -1)
+						down.push_back(data[i][j] + down[r-i-2]);
+					else
+						down.push_back(-1);
+				}
+				else
+					down.push_back(-1);
+			}
+
+			int directRight = -1;
+			if(data[i][j] != -1 && aux[i][j+1] != -1)
+				directRight = data[i][j] + aux[i][j+1];
+
+			aux[i][j] = maxAmongThree(directRight,up[i],down[r-i-1]);
+		}
+
+
+	}
+
+}
+
+int maxScoreImproved2(vector<vector<int> >& data, vector<vector<int> >& aux){
+	solve(data,aux,0);
+	int res = -1;
+	for(int i = 0; i < data.size(); i ++)
+		if(aux[i][0] > res)
+			res = aux[i][0];
+
+	vector<int> rOrdinary;
+	vector<int> cOrdinary;
+	vector<int> candidateRes;
+
+	int maxColumen = data[0].size();
+	for(int j = 1; j < data.size(); j ++){
+		if(aux[0][j] > res){
+			rOrdinary.push_back(0);
+			cOrdinary.push_back(j);
+			candidateRes.push_back(aux[0][j]);
+
+			if(j < maxColumen)
+				maxColumen = j;
+		}
+
+		if(aux[data.size() - 1][j] > res){
+			rOrdinary.push_back(data.size() - 1);
+			cOrdinary.push_back(j);
+			candidateRes.push_back(aux[data.size() - 1][j]);
+			if(j < maxColumen)
+				maxColumen = j;
+		}
+	}
+
+	if(rOrdinary.empty() )
+		return res;
+
+	
+	for(int i = 0; i < data.size(); i ++){
+		vector<int> ele;
+		for(int j = data[0].size() - 1; j >= 0; j --){
+			ele.push_back(data[i][j]);
+		}
+		reverseData.push_back(ele);
+	}
+
+	solve(reverseData,aux,maxColumen);
+	for(int i = 0; i < cOrdinary.size(); i ++){
+		int rr = cOrdinary[i];
+		int cc = cOrdinary[i];
+
+		if(aux[rr][data[0].size() - 1 - cc] != -1 && candidateRes[i] > res){
+
+			res = candidateRes[i];
+		}
+	}
+
+	return res;
+}
 
 int main(){
 	int n,m;
@@ -213,8 +457,8 @@ int main(){
 
 
 
-	int res = maxScore(data,aux);
-	printf("max is : %d\n", res);
+	//int res = maxScore(data,aux);
+	//printf("max is : %d\n", res);
 	int res2 = maxScoreImproved(data,aux);
 
 	
